@@ -1,0 +1,34 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: analysis-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/analysis_db
+    username: ${POSTGRES_USER}
+    password: 4{POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${RABBITMQ_DEFAULT_USER}
+    password: ${RABBITMQ_DEFAULT_PASS}
+
+# Настройки MinIO (те же, что и в storing)
+minio:
+  url: http://localhost:9000
+  accessKey: ${MINIO_ROOT_USER}
+  secretKey: ${MINIO_ROOT_PASSWORD}
+  bucket: student-works
+
+# Настройки внешней интеграции
+external-api:
+  word-cloud-url: https://quickchart.io/wordcloud

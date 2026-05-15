@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: gateway-service
+    name: gateway-com.integral.service
   cloud:
     gateway:
       routes:
@@ -18,3 +18,8 @@ spring:
           uri: http://localhost:8082
           predicates:
             - Path=/api/v1/reports/**
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs

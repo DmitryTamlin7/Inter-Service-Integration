@@ -3,13 +3,13 @@ server:
 
 spring:
   application:
-    name: storing-service
+    name: storing-com.integral.service
 
   # Настройка БД
   datasource:
     url: jdbc:postgresql://localhost:5432/storing_db
-    username: ${POSTGRES_USER}
-    password: 4{POSTGRES_PASSWORD}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:Soadsvanpjz228123}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -27,8 +27,8 @@ spring:
 # Кастомные настройки для MinIO
 minio:
   url: http://localhost:9000
-  accessKey: ${MINIO_ROOT_USER}
-  secretKey: ${MINIO_ROOT_PASSWORD}
+  accessKey: ${MINIO_ROOT_USER:admin}
+  secretKey: ${MINIO_ROOT_PASSWORD:Soadsvanpjz228123}
   bucket: student-works
 
 # Настройки очередей (для удобства в коде)
@@ -37,3 +37,9 @@ app:
     exchange: "work-exchange"
     queue: "analysis-queue"
     routing-key: "work.uploaded"
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs

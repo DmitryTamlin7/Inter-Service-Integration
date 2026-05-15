@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: analysis-service
+    name: analysis-com.integral.service
 
   datasource:
     url: jdbc:postgresql://localhost:5432/analysis_db
@@ -32,3 +32,9 @@ minio:
 # Настройки внешней интеграции
 external-api:
   word-cloud-url: https://quickchart.io/wordcloud
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs

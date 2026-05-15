@@ -1,4 +1,4 @@
-package config;
+package com.integral.config;
 
 import io.minio.MinioClient;
 

@@ -1,5 +1,6 @@
 package com.integral.service;
 
+import com.integral.dto.WorkEvent;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.integral.model.Work;
 import com.integral.model.WorkStatus;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,9 +23,16 @@ import java.util.UUID;
 public class WorkService {
     private final MinioClient minioClient;
     private final WorkRepository repository;
+    private final RabbitTemplate template;
 
     @Value("${minio.bucket}")
     private String bucketName;
+
+    @Value("${app.rabbit.exchange}")
+    private String exchangeName;
+
+    @Value("${app.rabbit.routing-key}")
+    private String routingKey;
 
     public Work uploadWork(MultipartFile file, String studentName){
         try {
@@ -49,6 +58,16 @@ public class WorkService {
 
             Work saved = repository.save(work);
             log.info("Запись о отправке решения сохранена");
+
+            WorkEvent event = new WorkEvent(
+                    saved.getId(),
+                    saved.getStudentName(),
+                    saved.getMinioPath(),
+                    saved.getStatus().name()
+            );
+
+            template.convertAndSend(exchangeName, routingKey, event);
+            log.info("Событие WorkEvent отправлен в брокер сообщений для ID: {}", saved.getId());
 
             return saved;
         }

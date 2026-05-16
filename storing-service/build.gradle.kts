@@ -13,6 +13,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
 }
 
 sourceSets {

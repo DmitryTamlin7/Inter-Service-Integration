@@ -33,6 +33,8 @@ app:
     queue: works-queue
     exchange: works-exchange
     routing-key: works.routing.key
+  external-api:
+    word-cloud-url: https://quickchart.io/wordcloud
 
 # Настройки внешней интеграции
 external-api:

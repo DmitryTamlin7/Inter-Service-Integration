@@ -11,8 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import сom.integral.domain.Report;
 import сom.integral.domain.ValidationReport;
 import сom.integral.dto.WorkEventDto;
+import сom.integral.repository.ReportRepository;
 import сom.integral.service.ValidationService;
 import java.io.InputStream;
 
@@ -23,12 +25,13 @@ public class WorkEventConsumer {
 
     private final MinioClient minioClient;
     private final ValidationService validationService;
+    private final ReportRepository reportRepository;
 
     @Value("${minio.bucketName}")
     private String bucketName;
 
     @RabbitListener(queues = "${app.rabbit.queue}")
-    private void processWorkEvent(WorkEventDto event){
+    public void processWorkEvent(WorkEventDto event){
         log.info("Событие получено. ID для работы: {}, Студент: {}", event.getWorkId(), event.getStudentName());
         try {
             StatObjectResponse stat = minioClient.statObject(
@@ -64,7 +67,21 @@ public class WorkEventConsumer {
         }
     }
 
-    private void  saveReport(Long workId, ValidationReport report){
-        log.info("отчет готов к сохранению");
+    private void  saveReport(Long workId, ValidationReport validationReport){
+
+        log.info("Сохранение финального отчета в для работы {} В БД", workId);
+        try {
+            Report report = new Report();
+            report.setWorkId(workId);
+            report.setStatus(validationReport.getStatus());
+            report.setRemarks(validationReport.getRemarks());
+            report.setWordCloudPath(null);
+
+            reportRepository.save(report);
+            log.info("Отчет для работы ID: {} Записан в БД", workId);
+        }
+        catch (Exception e){
+            log.error("Не удалось сохранить отчет в БД дя работы с ID: {} : {}", workId, e.getMessage());
+        }
     }
 }

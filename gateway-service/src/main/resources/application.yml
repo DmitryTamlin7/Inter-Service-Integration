@@ -7,27 +7,26 @@ spring:
   cloud:
     gateway:
       routes:
-        # Маршрут для загрузки работ
-        - id: storing-service
-          uri: http://localhost:8081
-          predicates:
-            # Какие пути перехватывать. Если запрос начинается так, то он пойдет на 8081 порт
-            - Path=/upload, /works/**, /swagger-ui/**, /v3/api-docs/**
-
-        # Маршрут для получения отчетов
+        # 1. Маршрут для получения отчетов (Проверяется первым)
         - id: analysis-service
           uri: http://localhost:8082
           predicates:
-            - Path=/api/v1/reports/**
+            - Path=/reports/**
+
+        # 2. Маршруты для хранения и загрузки работ
+        - id: storing-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/upload, /works/**, /swagger-ui/**, /v3/api-docs/**
 
   servlet:
     multipart:
       enabled: true
-      max-file-size: 25MB       # Максимальный размер одного файла
+      max-file-size: 25MB
       max-request-size: 25MB
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
   api-docs:
     path: /v3/api-docs
-

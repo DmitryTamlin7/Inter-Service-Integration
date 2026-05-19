@@ -42,6 +42,7 @@ external-api:
 
 springdoc:
   swagger-ui:
-    path: /swagger-ui.html
+    servers-url: http://localhost:8080
   api-docs:
     path: /v3/api-docs
+    use-management-port: false

@@ -13,4 +13,12 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
+    testImplementation ("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation ("org.testcontainers:junit-jupiter")
+    testImplementation ("org.testcontainers:postgresql")
+    testImplementation ("org.testcontainers:testcontainers")
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

@@ -3,10 +3,7 @@ package сom.integral.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import сom.integral.domain.Report;
 import сom.integral.repository.ReportRepository;
 
@@ -18,6 +15,7 @@ public class ReportController {
 
     private final ReportRepository repository;
 
+    @CrossOrigin("*")
     @GetMapping("/{work_id}")
     public ResponseEntity<Report> getReportByWorkId(@PathVariable("work_id") Long workId){
         log.info("Получен запрос на получение отчета для работы {}", workId);
@@ -31,5 +29,12 @@ public class ReportController {
                     log.warn("Отчет по работе {} найден", workId);
                     return ResponseEntity.notFound().build();
                 });
+    }
+
+    @CrossOrigin("*")
+    @GetMapping
+    public ResponseEntity<java.util.List<Report>> getAllReports() {
+        log.info("Получен запрос на получение всех отчетов");
+        return ResponseEntity.ok(repository.findAll());
     }
 }

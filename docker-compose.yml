@@ -1,16 +1,26 @@
 version: '3.8'
 
 services:
+  # ================= ИНФРАСТРУКТУРА =================
+
   postgres:
     image: postgres:15-alpine
     container_name: database_postgres
     environment:
+      POSTGRES_DB: storing_db
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - ./init-db:/docker-entrypoint-initdb.d
+    networks:
+      - integration-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d storing_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   minio:
     image: minio/minio
@@ -22,6 +32,13 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     command: server /data --console-address ":9001"
+    networks:
+      - integration-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -32,7 +49,83 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: user
       RABBITMQ_DEFAULT_PASS: Soadsvanpjz228123
+    networks:
+      - integration-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
+  # ================= МИКРОСЕРВИСЫ БЭКЕНДА =================
 
+  storing-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: storing-service
+    container_name: storing-service
+    environment:
+      # ДОБАВЛЯЕМ ЭТИ 3 СТРОЧКИ:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/storing_db
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      # Оставляем то, что было:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_USERNAME=user
+      - SPRING_RABBITMQ_PASSWORD=Soadsvanpjz228123
+      - AWS_ACCESS_KEY=${MINIO_ROOT_USER}
+      - AWS_SECRET_KEY=${MINIO_ROOT_PASSWORD}
+    networks:
+      - integration-network
+    depends_on:
+      postgres: # ДОБАВЛЯЕМ ОЖИДАНИЕ БАЗЫ
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
 
+  analysis-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: analysis-service
+    container_name: analysis-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/storing_db
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_USERNAME=user
+      - SPRING_RABBITMQ_PASSWORD=Soadsvanpjz228123
+    networks:
+      - integration-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
+  # ================= API GATEWAY =================
+
+  gateway-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: gateway-service
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    networks:
+      - integration-network
+    depends_on:
+      storing-service:
+        condition: service_started
+      analysis-service:
+        condition: service_started
+
+# ================= СЕТИ =================
+networks:
+  integration-network:
+    driver: bridge

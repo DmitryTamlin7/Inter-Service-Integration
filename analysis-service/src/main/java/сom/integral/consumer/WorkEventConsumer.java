@@ -5,6 +5,7 @@ import io.minio.*;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,7 @@ public class WorkEventConsumer {
     @Value("${minio.bucketName}")
     private String bucketName;
 
-    @RabbitListener(queues = "${app.rabbit.queue}")
+    @RabbitListener(queuesToDeclare = @Queue("works-queue"))
     public void processWorkEvent(WorkEventDto event){
         log.info("Событие получено. ID для работы: {}, Студент: {}", event.getWorkId(), event.getStudentName());
         try {

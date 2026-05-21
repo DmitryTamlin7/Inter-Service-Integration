@@ -4,9 +4,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+/**
+ * HTTP-клиент для интеграции со сторонним внешним API (QuickChart).
+ * <p>
+ * Инкапсулирует логику сетевого взаимодействия через {@link org.springframework.web.client.RestTemplate}.
+ * Формирует URI с нужными query-параметрами, обрабатывает возможные сетевые сбои
+ * и возвращает сгенерированное изображение.
+ *
+ * @author [Dmitry]
+ * @version 1.0
+ */
 @Slf4j
 @Service
 public class WordCloudClient {

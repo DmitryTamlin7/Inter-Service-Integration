@@ -7,6 +7,17 @@ import org.springframework.web.bind.annotation.*;
 import сom.integral.domain.Report;
 import сom.integral.repository.ReportRepository;
 
+/**
+ * REST-контроллер для предоставления результатов анализа студенческих работ.
+ * <p>
+ * Предоставляет клиенту доступ к статистике, сгенерированным облакам слов и
+ * результатам автоматических проверок, выполненных микросервисом {@code analysis-service}.
+ * Есть 2 пути получения:
+ *  запрос на получения всех отчетов списком JSON
+ *  получения конкретного отчета по workId
+ * @author [Dmitry]
+ *
+ */
 @RestController
 @RequestMapping("/reports")
 @RequiredArgsConstructor

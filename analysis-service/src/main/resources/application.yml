@@ -5,11 +5,10 @@ spring:
   application:
     name: analysis-com.integral.service
 
-  # Настройка БД: меняем localhost на хост postgres
   datasource:
     url: jdbc:postgresql://postgres:5432/storing_db
-    username: ${POSTGRES_USER:postgres}
-    password: ${POSTGRES_PASSWORD:Soadsvanpjz228123}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -17,20 +16,17 @@ spring:
       ddl-auto: update
     show-sql: true
 
-  # Настройка RabbitMQ: меняем localhost на хост rabbitmq
   rabbitmq:
     host: rabbitmq
     port: 5672
-    username: ${RABBITMQ_DEFAULT_USER:user}
-    password: ${RABBITMQ_DEFAULT_PASS:Soadsvanpjz228123}
+    username: ${RABBITMQ_DEFAULT_USER}
+    password: ${RABBITMQ_DEFAULT_PASS}
 
-# Настройки MinIO: меняем localhost на хост minio
-# Обрати внимание: у тебя тут ключ называется bucketName, а в storing был bucket.
-# Оставляю как у тебя в коде, но хост теперь правильный.
+
 minio:
   url: http://minio:9000
-  accessKey: ${MINIO_ROOT_USER:admin}
-  secretKey: ${MINIO_ROOT_PASSWORD:Soadsvanpjz228123}
+  accessKey: ${MINIO_ROOT_USER}
+  secretKey: ${MINIO_ROOT_PASSWORD}
   bucketName: student-works
 
 app:
@@ -41,7 +37,6 @@ app:
   external-api:
     word-cloud-url: https://quickchart.io/wordcloud
 
-# Настройки внешней интеграции (внешние https ссылки внутри докера работают без изменений)
 external-api:
   word-cloud-url: https://quickchart.io/wordcloud
 

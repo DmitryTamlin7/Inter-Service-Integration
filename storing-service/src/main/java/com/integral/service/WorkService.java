@@ -11,12 +11,26 @@ import com.integral.model.WorkStatus;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.integral.repository.WorkRepository;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Главный сервисный класс бизнес-логики для обработки входящих работ.
+ * <p>
+ * Выполняет оркестрацию процесса сохранения:
+ * <ol>
+ * <li>Загружает физический файл в объектное хранилище (MinIO).</li>
+ * <li>Сохраняет метаданные транзакционно в реляционную БД (PostgreSQL).</li>
+ * <li>Отправляет событие (сообщение) в очередь для последующего асинхронного анализа.</li>
+ * </ol>
+ *
+ * @author [Dmitry]
+ * @see com.integral.repository.WorkRepository
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -34,6 +48,7 @@ public class WorkService {
     @Value("${app.rabbit.routing-key}")
     private String routingKey;
 
+    @Transactional
     public Work uploadWork(MultipartFile file, String studentName){
         try {
             String fileExtension = getExtension(file.getOriginalFilename());

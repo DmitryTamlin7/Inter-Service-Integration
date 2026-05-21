@@ -1,8 +1,6 @@
 version: '3.8'
 
 services:
-  # ================= ИНФРАСТРУКТУРА =================
-
   postgres:
     image: postgres:15-alpine
     container_name: database_postgres
@@ -47,8 +45,8 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USER: user
-      RABBITMQ_DEFAULT_PASS: Soadsvanpjz228123
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     networks:
       - integration-network
     healthcheck:
@@ -57,7 +55,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # ================= МИКРОСЕРВИСЫ БЭКЕНДА =================
 
   storing-service:
     build:
@@ -65,21 +62,21 @@ services:
       dockerfile: Dockerfile
       target: storing-service
     container_name: storing-service
+    env_file:
+      - .env
     environment:
-      # ДОБАВЛЯЕМ ЭТИ 3 СТРОЧКИ:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/storing_db
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
-      # Оставляем то, что было:
       - SPRING_RABBITMQ_HOST=rabbitmq
-      - SPRING_RABBITMQ_USERNAME=user
-      - SPRING_RABBITMQ_PASSWORD=Soadsvanpjz228123
-      - AWS_ACCESS_KEY=${MINIO_ROOT_USER}
-      - AWS_SECRET_KEY=${MINIO_ROOT_PASSWORD}
+      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
+      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     networks:
       - integration-network
     depends_on:
-      postgres: # ДОБАВЛЯЕМ ОЖИДАНИЕ БАЗЫ
+      postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -92,13 +89,17 @@ services:
       dockerfile: Dockerfile
       target: analysis-service
     container_name: analysis-service
+    env_file:
+      - .env
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/storing_db
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - SPRING_RABBITMQ_HOST=rabbitmq
-      - SPRING_RABBITMQ_USERNAME=user
-      - SPRING_RABBITMQ_PASSWORD=Soadsvanpjz228123
+      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
+      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     networks:
       - integration-network
     depends_on:
@@ -107,7 +108,7 @@ services:
       rabbitmq:
         condition: service_healthy
 
-  # ================= API GATEWAY =================
+
 
   gateway-service:
     build:
@@ -125,7 +126,7 @@ services:
       analysis-service:
         condition: service_started
 
-# ================= СЕТИ =================
+
 networks:
   integration-network:
     driver: bridge

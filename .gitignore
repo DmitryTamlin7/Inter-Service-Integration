@@ -5,6 +5,7 @@ build/
 !**/src/test/**/build/
 .kotlin
 .env
+.env.example
 application.yml
 ### IntelliJ IDEA ###
 .idea/modules.xml

@@ -20,6 +20,14 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Компонент-слушатель очередей RabbitMQ для асинхронного анализа работ.
+ * <p>
+ * Работает в фоне внутри микросервиса analysis-service. Перехватывает события
+ * о новых загруженных решениях и запускает интеграцию со сторонним API Облако слов.
+ *
+ * @author [Dmitry]
+ */
 @Component
 @Slf4j
 @RequiredArgsConstructor

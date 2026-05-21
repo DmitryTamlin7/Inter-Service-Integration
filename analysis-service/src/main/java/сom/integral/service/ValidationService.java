@@ -4,7 +4,15 @@ import org.springframework.stereotype.Service;
 import сom.integral.domain.ValidationReport;
 
 import java.util.List;
-
+/**
+ * Основной сервисный слой для выполнения алгоритмов анализа кода и текстов работ.
+ * <p>
+ * Сервис отвечает за оркестрацию обработки: извлечение текста, вызов внешних API
+ * для визуализации и обновление статуса анализа в базе данных.
+ *
+ * @author [Dmitry]
+ * @see сom.integral.client.WordCloudClient
+ */
 @Service
 public class ValidationService {
 

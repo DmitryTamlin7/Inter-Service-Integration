@@ -7,13 +7,12 @@ spring:
   cloud:
     gateway:
       routes:
-        # 1. Маршрут для получения отчетов (Проверяется первым)
+
         - id: analysis-service
           uri: http://analysis-service:8082
           predicates:
             - Path=/reports/**
 
-        # 2. Маршруты для хранения и загрузки работ
         - id: storing-service
           uri: http://storing-service:8081
           predicates:

@@ -9,6 +9,17 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.integral.service.WorkService;
 
+/**
+ * REST-контроллер для управления загрузкой и хранением студенческих лабораторных работ.
+ * <p>
+ * Является входной точкой (API) сервиса хранения (storing-service).
+ * Принимает файлы от клиентов, делегирует их физическое сохранение в MinIO и
+ * инициирует асинхронный процесс анализа через брокер сообщений RabbitMQ.
+ *
+ * @author [Dmitry]
+ * @version 1.0
+ *
+ */
 @RestController
 @RequestMapping("/works")
 @RequiredArgsConstructor

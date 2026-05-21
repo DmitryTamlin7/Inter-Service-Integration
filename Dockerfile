@@ -5,6 +5,11 @@ COPY settings.gradle* build.gradle* ./
 COPY storing-service ./storing-service
 COPY analysis-service ./analysis-service
 COPY gateway-service ./gateway-service
+RUN for svc in storing-service analysis-service; do \
+      if [ ! -f "$$svc/src/main/resources/application.yml" ] && [ -f "$$svc/src/main/resources/application.yml.example" ]; then \
+        cp "$$svc/src/main/resources/application.yml.example" "$$svc/src/main/resources/application.yml"; \
+      fi; \
+    done
 RUN gradle bootJar --no-daemon -x test
 
 FROM eclipse-temurin:21-jre-jammy AS storing-service

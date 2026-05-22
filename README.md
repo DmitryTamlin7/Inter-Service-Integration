@@ -133,9 +133,9 @@ sequenceDiagram
    AS->>MinIO: Save file from API
     AS->>DB: INSERT into report table
    Teaсher->>GW: GET /report/*
-   GW->>SS: Forward Request
-   SS->>DB: Select METADATA in reports table
-   DB-->>GW: HTTP 200 OK
+   GW->>AS: Forward Request
+   AS->>DB: Select METADATA in reports table
+   AS-->>GW: HTTP 200 OK
    GW-->>Teaсher: Response Success
     deactivate AS
 ```

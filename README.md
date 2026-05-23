@@ -149,3 +149,9 @@ sequenceDiagram
   <i>Рисунок 10. Интерактивный отчёт покрытия кода тестами JaCoCo (Total Coverage).</i>
 </p>
 
+
+
+[Ссылка на Диск со скринкастом](https://disk.yandex.ru/d/rjDYV6Gou8mATw)
+
+
+https://disk.yandex.ru/d/rjDYV6Gou8mATw
